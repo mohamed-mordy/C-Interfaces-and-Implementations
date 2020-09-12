@@ -1,5 +1,6 @@
 #include <stdarg.h>
 #include <stddef.h>
+#include "list.h"
 #include "assert.h"
 #include "except.h"
 #include "mem.h"
@@ -65,7 +66,7 @@ T List_pop(T list, void **x)
 		T head = list->rest;
 		if(x)
 			*x = list->first;
-		FREE(list)
+		FREE(list);
 		return head;
 	}
 	else
@@ -94,19 +95,19 @@ int List_length(T list)
 	return n;
 }
 
-void List_free(T list)
+void List_free(T *list)
 {
 	T next;
 	//
 	assert(list);
-	for( ; *list; *list = rest)
+	for( ; *list; *list = next)
 	{
 		next = (*list)->rest;
 		FREE(*list);
 	}
 }
 
-void List_map(T list, void apply(void **x, void *cl), *cl)
+void List_map(T list, void apply(void **x, void *cl),void *cl)
 {
 	assert(apply);
 	for( ; list; list = list->rest)
@@ -116,7 +117,7 @@ void List_map(T list, void apply(void **x, void *cl), *cl)
 void **List_toArray(T list, void *end)
 {
 	int i, n = List_length(list);
-	void **array = ALLOC((N+1)*sizeof(*array));
+	void **array = ALLOC((n+1)*sizeof(*array));
 	for(i = 0; i < n; i++)
 	{
 		array[i] = list->first;

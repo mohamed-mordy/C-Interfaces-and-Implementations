@@ -14,7 +14,7 @@ extern void *Mem_resize(void *ptr, long nbytes, const char *file, int line);
 
 
 // exported macors
-#define ALLOC(NBYTES)\
+#define ALLOC(nbytes)\
 	Mem_alloc((nbytes), __FILE__, __LINE__)
 
 #define CALLOC(count, nbytes)\

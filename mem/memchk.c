@@ -75,8 +75,9 @@ void *Mem_resize(void *ptr, long nbytes, const char *file, int line)
 		Except_raise(&Assert_Failed, file, line);
 	newptr = Mem_alloc(nbytes, file, line);
 	memcpy(newptr, ptr, nbytes < bp->size ? nbytes: bp->size);
-	Mem_fry(ptr, file , line);
+	Mem_free(ptr, file , line);
 	return newptr;
+
 }
 
 void *Mem_calloc(long count, long nbytes, const char *file, int line)
@@ -92,7 +93,7 @@ void *Mem_calloc(long count, long nbytes, const char *file, int line)
 
 static struct descriptor *dalloc(void *ptr, long size, const char *file, int line)
 {
-	static struct descriptor *dvail;
+	static struct descriptor *avail;
 	static int nleft;
 	if(nleft <= 0)
 	{
@@ -138,7 +139,7 @@ void *Mem_alloc(long nbytes, const char *file, int line)
 				if(file == NULL)
 					RAISE(Mem_Failed);
 				else
-					Except_raise(&Memory_Failed, file ,line);
+					Except_raise(&Mem_Failed, file ,line);
 			}
 		}
 		if(bp == &freelist)
@@ -151,7 +152,7 @@ void *Mem_alloc(long nbytes, const char *file, int line)
 				if(file == NULL)
 					RAISE(Mem_Failed);
 				else
-					Except_raise(&Memory_Failed, file ,line);
+					Except_raise(&Mem_Failed, file ,line);
 			}
 			newptr->free = freelist.free;
 			freelist.free = newptr;
@@ -159,5 +160,6 @@ void *Mem_alloc(long nbytes, const char *file, int line)
 	}
 	assert(0);
 	return NULL;
+
 }
 

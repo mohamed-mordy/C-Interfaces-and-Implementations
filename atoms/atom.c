@@ -6,7 +6,7 @@
 #include "mem.h"
 
 // macros
-#define NELEMS(X) (sizeof(x))/(sizeof(x[0]))
+#define NELEMS(x) (sizeof(x))/(sizeof(x[0]))
 
 // data
 static struct atom{
@@ -101,7 +101,7 @@ int Atom_length(const char *str)
 	// code
 	assert(str);
 	for(i = 0; i < NELEMS(buckets); i++)
-		for(p = bickets[i]; p; p = p->link)
+		for(p = buckets[i]; p; p = p->link)
 			if(p->str == str)
 				return p->len;
 	assert(0);
