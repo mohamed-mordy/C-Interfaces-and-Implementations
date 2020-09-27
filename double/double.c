@@ -1,3 +1,4 @@
+// revisited 9/25/2020 6:48:32 PM
 // includes
 #include <stdio.h>
 #include <stdlib.h>
@@ -9,22 +10,18 @@
 int linenum;
 
 // prototypes
-int getword(FILE*, char*, int);
-void doubleword(char*, FILE*);
+int getword(FILE *fp, char *buf, int size);
+void doubleword(char *name, FILE *fp);
 
 // functions
-int main(int argc, char* argv[])
+int main(int argc, char **argv)
 {
-	for(int i = 1; i < argc; i++)
-	{
+	for(int i = 1; i < argc; i++) {
 		FILE* fp = fopen(argv[i], "r");
-		if(fp == NULL)
-		{
+		if(fp == NULL) {
 			fprintf(stderr, "%s: can't open '%s' (%s) ", argv[0], argv[i], strerror(errno));
 			return EXIT_FAILURE;
-		}
-		else
-		{
+		} else {
 			doubleword(argv[i], fp);
 			fclose(fp);
 		}
@@ -35,7 +32,7 @@ int main(int argc, char* argv[])
 	return EXIT_SUCCESS;
 }
 
-int getword(FILE* fp, char* buf, int size)
+int getword(FILE *fp, char *buf, int size)
 {
 	int c;
 
@@ -62,17 +59,14 @@ int getword(FILE* fp, char* buf, int size)
 	return 0;
 }
 
-void doubleword(char* name, FILE* fp)
+void doubleword(char *name, FILE *fp)
 {
 	char prev[128], word[128];
 
 	linenum = 1;
 	prev[0] = '\0';
-	while(getword(fp, word, sizeof word))
-	{
-		if(isalpha(word[0]) && strcmp(prev, word) == 0)
-			// word is a dublicate
-		{
+	while(getword(fp, word, sizeof word)) {
+		if(isalpha(word[0]) && strcmp(prev, word) == 0) {
 			if(name)
 				printf("%s: ", name);
 			printf("%d: %s\n", linenum, word);

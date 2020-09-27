@@ -1,5 +1,5 @@
-default: clean
-	
+default: 
+
 except.o: except.c except.h assert.h
 	gcc -c except.c
 

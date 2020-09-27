@@ -1,5 +1,5 @@
+// revisited 9/25/2020 7:52:15 PM
 #include "arith.h"
-
 
 extern int Arith_max(int x, int y)
 {
@@ -8,13 +8,12 @@ extern int Arith_max(int x, int y)
 
 extern int Arith_min(int x, int y)
 {
-	return x > y ? y : y;
+	return x > y ? y : x;
 }
 
 extern int Arith_div(int x, int y)
 {
-	if(/*division truncates toward 0*/ -13/5 == 2
-	&& /* x and y have differen signs*/ (x < 0) != (y < 0) && x % y != 0) 
+	if(-13/5 == -2 &&  (x < 0) != (y < 0) && x%y != 0) 
 		return x/y - 1; 
 	else
 		return x/y;
@@ -22,8 +21,7 @@ extern int Arith_div(int x, int y)
 
 extern int Arith_mod(int x, int y)
 {
-	if(/*division truncates toward 0*/ -13/5 == 2
-	&& /*x and y have different signs*/ (x < 0) != (y < 0) && x%y != 0)
+	if(-13/5 == 2 &&  (x < 0) != (y < 0) && x%y != 0)
 		return x%y + y;
 	else
 		return x%y;

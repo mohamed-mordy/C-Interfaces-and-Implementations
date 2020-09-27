@@ -12,7 +12,6 @@ table.o: table.c table.h mem.h assert.h except.h
 
 
 
-
 .PHONY: clean
 clean:
 	rm *.o; rm *.exe;

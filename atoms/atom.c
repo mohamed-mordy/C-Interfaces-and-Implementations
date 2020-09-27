@@ -1,15 +1,18 @@
-// includes
+//revisited 9/26/2020 12:48:15 PM
+//<includes>
 #include "atom.h"
 #include <string.h>
 #include "assert.h"
 #include <limits.h>
 #include "mem.h"
+// endof<>
 
-// macros
+//<macros>
 #define NELEMS(x) (sizeof(x))/(sizeof(x[0]))
+// endof<>
 
-// data
-static struct atom{
+//<data>
+static struct atom {
 	struct atom *link;
 	int len;
 	char *str;
@@ -60,8 +63,9 @@ static unsigned long scatter[] = {
 	2143346068, 1975249606, 1136476375, 262925046, 92778659, 1856406685,
 	1884137923, 53392249, 1735424165, 1602280572
 };
+// endof<data>
 
-// functions
+//<functions>
 const char *Atom_new(const char *str, int len)
 {
 	unsigned long h;
@@ -75,10 +79,9 @@ const char *Atom_new(const char *str, int len)
 		h = (h<<1) + scatter[(unsigned char) str[i]];
 	h %= NELEMS(buckets);
 	for(p = buckets[h]; p; p = p->link)
-		if(len == p->len)
-		{
-			for(i = 0; i < len && p->str[i] == str[i]; )
-				i++;
+		if(len == p->len) {
+			for(i = 0; i < len && p->str[i] == str[i]; i++)
+				;
 			if(i == len)
 				return p->str;
 		}
@@ -100,9 +103,9 @@ int Atom_length(const char *str)
 	int i;
 	// code
 	assert(str);
-	for(i = 0; i < NELEMS(buckets); i++)
-		for(p = buckets[i]; p; p = p->link)
-			if(p->str == str)
+	for (i = 0; i < NELEMS(buckets); i++)
+		for (p = buckets[i]; p; p = p->link)
+			if (p->str == str)
 				return p->len;
 	assert(0);
 	return(0);
@@ -120,7 +123,7 @@ const char *Atom_int(long n)
 	char *s = str + sizeof str;
 	unsigned long m;
 
-	if(n == LONG_MIN)
+	if (n == LONG_MIN)
 		m = LONG_MAX + 1UL;
 	else if(n < 0)
 		m = -n;
@@ -128,13 +131,10 @@ const char *Atom_int(long n)
 		m = n;
 	do
 		*--s = m%10 + '0';
-	while((m /= 10) > 0);
-	if(n < 0)
-		*--s = '0';
+	while ((m /= 10) > 0);
+	if (n < 0)
+		*--s = '-';
 	return Atom_new(s, (str + sizeof str) - s);
 }
-
-
-
-
+// endof<functions>
 

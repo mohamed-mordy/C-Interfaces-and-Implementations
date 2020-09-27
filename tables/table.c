@@ -12,7 +12,9 @@ struct T {
 	int size;
 	int (*cmp)(const void *x, const void *y);
 	unsigned (*hash)(const void *key);
-	//endof<>
+	int length;
+	unsigned timestamp;
+	//endof<fields>
 	struct binding {
 		struct binding *link;
 		const void *key;
@@ -20,10 +22,19 @@ struct T {
 	} **buckets;
 };
 
-//endof<>
+//endof<types>
 
 //<static functions>
-//endof<>
+static int cmpatom(const void *x, const void *y)
+{
+	return x != y;
+}
+
+static unsigned hashatom(const void *key)
+{
+	return (unsigned long) key>>2;
+}
+//endof<static functions>
 
 //<functions>
 T Table_new(int hint,
@@ -51,28 +62,133 @@ T Table_new(int hint,
 	table->timestamp = 0;
 	return table;
 }
-//endof<>
 
+void *Table_get(T table, const void *key)
+{
+	int i;
+	struct binding *p;
+	assert(table);
+	assert(key);
+	//<search table for key>
+	i = (*table->hash)(key)%table->size;
+	for(p = table->buckets[i]; p; p = p->link)
+		if((*table->cmp)(key, p->key) == 0)
+			break;
+	//endof<search table for key>
+	return p ? p->value : NULL;
+}
 
+void *Table_put(T table, const void *key, void *value)
+{
+	int i;
+	struct binding *p;
+	void *prev;
+	//
+	assert(table);
+	assert(key);
+	//<search table for key>
+	i = (*table->hash)(key)%table->size;
+	for(p = table->buckets[i]; p; p = p->link)
+		if((*table->cmp)(key, p->key) == 0)
+			break;
+	//endof<search table for key>
+	if(p == NULL)
+	{
+		NEW(p);
+		p->key = key;
+		p->link = table->buckets[i];
+		table->buckets[i] = p;
+		table->length++;
+		prev = NULL;
+	}
+	else
+		prev = p->value;
+	p->value = value;
+	table->timestamp++;
+	return prev;
+}
 
+int Table_length(T table)
+{
+	assert(table);
+	return table->length;
+}
 
+void Table_map(T table,
+	void apply(const void *key, void **value, void *cl), 
+	void *cl)
+{
+	int i;
+	unsigned stamp;
+	struct binding *p;
+	//
+	assert(table);
+	assert(apply);
+	stamp = table->timestamp;
+	for(i = 0; i < table->size; i++)
+		for(p = table->buckets[i]; p; p = p->link)
+		{
+			apply(p->key, &p->value, cl);
+			assert(table->timestamp == stamp);
+		}
+}
 
+void *Table_remove(T table, const void *key)
+{
+	int i;
+	struct binding **pp;
+	//
+	assert(table);
+	assert(key);
+	table->timestamp++;
+	i = (*table->hash)(key)%table->size;
+	for(pp = &table->buckets[i]; *pp; pp = &(*pp)->link)
+		if((*table->cmp)(key, (*pp)->key) == 0)
+		{
+			struct binding *p = *pp;
+			void *value = p->value;
+			*pp = p->link;
+			FREE(p);
+			table->length--;
+			return value;
+		}
+	return NULL;
+}
 
+void **Table_toArray(T table, void *end)
+{
+	int i, j = 0;
+	void **array;
+	struct binding *p;
+	assert(table);
+	array = ALLOC((2*table->length + 1)*sizeof (*array));
+	for(i = 0; i < table->size; i++)
+		for(p = table->buckets[i]; p; p = p->link)
+		{
+			array[j++] = (void *)p->key;
+			array[j++] = p->value;
+		}
+	array[j] = end;
+	return array;
+}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+void Table_free(T *table)
+{
+	assert(table && *table);
+	if((*table)->length > 0)
+	{
+		int i;
+		struct binding *p, *q;
+		for(i = 0; i < (*table)->size; i++)
+			for(p = (*table)->buckets[i]; p; p = q)
+			{
+				q = p->link;
+				FREE(p);
+			}
+	}
+	FREE(table);
+}
+//endof<functions>
 
 
 
