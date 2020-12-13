@@ -4,7 +4,7 @@
 #define T List_T
 typedef struct T *T;
 
-struct T{
+struct T {
 	T rest;
 	void *first;
 };

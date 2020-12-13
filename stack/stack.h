@@ -1,5 +1,3 @@
-// revisited 9/25/2020 9:44:08 PM
-
 #ifndef STACK_INCLUDED
 #define STACK_INCLUDED
 
@@ -13,6 +11,5 @@ extern void *Stack_pop  (T stk);
 extern void  Stack_free (T *stk);
 
 #undef T
-
 #endif
 

@@ -1,4 +1,3 @@
-// revisited 9/26/2020 12:47:11 PM
 #include <stddef.h>
 #include "assert.h"
 #include "mem.h"
@@ -7,9 +6,9 @@
 #define T Stack_T
 
 // types
-struct T{
+struct T {
 	int count;
-	struct elem{
+	struct elem {
 		void *x;
 		struct elem *link;
 	} *head;
@@ -19,7 +18,6 @@ struct T{
 T Stack_new(void)
 {
 	T stk;
-
 	NEW(stk);
 	stk->count = 0;
 	stk->head = NULL;
@@ -34,9 +32,8 @@ int Stack_empty(T stk)
 
 void Stack_push(T stk, void *x)
 {
-	struct elem *t;
-
 	assert(stk);
+	struct elem *t;
 	NEW(t);
 	t->x = x;
 	t->link = stk->head;
@@ -46,25 +43,20 @@ void Stack_push(T stk, void *x)
 
 void *Stack_pop(T stk)
 {
-	void *x;
-	struct elem *t;
-
 	assert(stk);
 	assert(stk->count > 0);
-	t = stk->head;
+	struct elem *t = stk->head;
 	stk->head = t->link;
 	stk->count--;
-	x = t->x;
+	void *x = t->x;
 	FREE(t);
 	return x;
 }
 
-void Stack_free(T stk)
+void Stack_free(T *stk)
 {
-	struct elem *t, *u;
-
 	assert(stk && *stk);
-	for(t = (*stk)->head; t; t = u) {
+	for (struct elem *t = (*stk)->head, *u; t; t = u) {
 		u = t->link;
 		FREE(t);
 	}
